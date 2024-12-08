@@ -6,19 +6,11 @@ import streamlit as st
 
 # Load the dataset
 data = pd.read_csv("C:/Users/Omkar/Desktop/Spam Email Detection/email library.csv")
-#print(data.head(5))
-
-# Check dataset shape and clean it
-#print(data.shape)
+# Clean the dataset
 data.drop_duplicates(inplace=True)
-#print(data.shape)  
 
-# Check for missing values
-#print(data.isnull().sum())
-
-# Replacing categories 'ham' and 'spam' with 'Not Spam' and 'Spam'
+# Replace categories 'ham' and 'spam' with 'Not Spam' and 'Spam'
 data['Category'] = data['Category'].replace(['ham', 'spam'], ['Not Spam', 'Spam'])
-#print(data.head(5))
 
 # Separate features and target
 mess = data['Message']
@@ -37,23 +29,16 @@ model = MultinomialNB()
 # Train the model
 model.fit(features, cat_train)
 
-# Test the model
-features_test = cv.transform(mess_test)
-#print(model.score(features_test,cat_test))
-
-#predict data
-
+# Function to predict the category of a message
 def predict(message):
     input_message = cv.transform([message]).toarray()
+    result = model.predict(input_message)
+    return result[0]
 
-    result=model.predict(input_message)
-    return result
-
+# Streamlit UI
 st.header('Email Spam Detection')
 
-
-
-input_mess = st.text_input_('Enter your Email here')
-if st.button('check'):
+input_mess = st.text_input('Enter your Email here')
+if st.button('Check'):
     output = predict(input_mess)
-    st.markdown=output
+    st.markdown(f'The email is: **{output}**')
